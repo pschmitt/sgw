@@ -2,8 +2,6 @@
 
 cd $(readlink -f $(dirname "$0"))
 
-IP="$(./do.sh ip)"
-
 if [[ "$1" == "-v" || "$1" == "--verbose" ]]
 then
     VERBOSE="-v"
@@ -12,9 +10,20 @@ else
     VERBOSE=
 fi
 
+# Get SSH_USER from config file
+if [[ -r sgw.conf ]]
+then
+    source sgw.conf
+else
+    echo "Config file does not exist or is not readable" >&2
+    exit 3
+fi
+
+IP="$(./do.sh ip)"
+
 # start. do. stop.
 ./do.sh "$VERBOSE" -w start && {
     ./wait.sh on "$IP" "."
-    ssh -Att core@"$IP" "$@"
+    ssh -Att "${SSH_USER}@${IP}" "$@"
 }
 ./do.sh "$VERBOSE" stop
