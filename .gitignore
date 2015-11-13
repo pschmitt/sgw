@@ -1,0 +1,5 @@
+passwd
+token
+.ropeproject/
+*.pyc
+sgw.conf

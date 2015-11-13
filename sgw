@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+cd $(readlink -f $(dirname "$0"))
+
+IP="$(./do.sh ip)"
+
+if [[ "$1" == "-v" || "$1" == "--verbose" ]]
+then
+    VERBOSE="-v"
+    shift
+else
+    VERBOSE=
+fi
+
+# start. do. stop.
+./do.sh "$VERBOSE" -w start && {
+    ./wait.sh on "$IP" "."
+    ssh -Att core@"$IP" "$@"
+}
+./do.sh "$VERBOSE" stop
